@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🇮🇳 Unified API Management System – Tricolor Edition</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --saffron: #ff9933;
+        --green: #138808;
+        --white: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.1);
+      }
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--white);
+        color: #1f2933;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      header {
+        background: var(--saffron);
+        color: var(--white);
+        text-align: center;
+        padding: 2rem 1rem;
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+      header h1 {
+        margin: 0;
+        font-size: 2rem;
+        letter-spacing: 1px;
+      }
+      main {
+        flex: 1;
+        padding: 2rem 1rem 3rem;
+        max-width: 960px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .card {
+        background: var(--white);
+        border-radius: 16px;
+        border: 2px solid rgba(19, 136, 8, 0.15);
+        box-shadow: 0 12px 30px var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .module-card {
+        border-radius: 16px;
+        border: 1px solid rgba(19, 136, 8, 0.2);
+        background: linear-gradient(180deg, rgba(255, 153, 51, 0.05), rgba(19, 136, 8, 0.05));
+        padding: 1.5rem;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+      }
+      .mode-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--green);
+        background: rgba(19, 136, 8, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+      }
+      form {
+        display: grid;
+        gap: 1rem;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type='text'] {
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        font-size: 1rem;
+      }
+      button {
+        background: linear-gradient(90deg, #ff9933, #ffffff, #138808);
+        border: none;
+        color: #0b1f15;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(19, 136, 8, 0.25);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .token-display {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 153, 51, 0.1);
+        border-left: 4px solid var(--saffron);
+        border-radius: 12px;
+        word-break: break-all;
+        font-size: 0.9rem;
+        color: #374151;
+      }
+      .response-box {
+        background: linear-gradient(135deg, rgba(19, 136, 8, 0.12), rgba(255, 255, 255, 0.9));
+        border-radius: 16px;
+        border: 2px solid rgba(19, 136, 8, 0.3);
+        padding: 1.5rem;
+        font-family: 'Poppins', sans-serif;
+        min-height: 160px;
+        white-space: pre-wrap;
+        color: #1f2933;
+      }
+      footer {
+        background: var(--green);
+        color: var(--white);
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+      .note.small {
+        font-size: 0.8rem;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: rgba(107, 114, 128, 0.15);
+        color: #374151;
+      }
+      .status::before {
+        content: '●';
+        font-size: 0.65rem;
+      }
+      .status-success {
+        background: rgba(19, 136, 8, 0.15);
+        color: var(--green);
+      }
+      .status-warning {
+        background: rgba(255, 153, 51, 0.18);
+        color: #c05621;
+      }
+      .status-danger {
+        background: rgba(220, 38, 38, 0.18);
+        color: #b91c1c;
+      }
+      .status-neutral {
+        background: rgba(107, 114, 128, 0.15);
+        color: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🇮🇳 Unified API Management System Dashboard</h1>
+      <p class="note">Tricolor Edition &middot; Node.js + Express + SQLite + Swagger</p>
+    </header>
+    <main>
+      <section class="card">
+        <h2>System Mode</h2>
+        <p class="mode-indicator" id="modeIndicator">Mode: Loading...</p>
+      </section>
+
+      <section class="card">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div>
+            <label for="username">Username</label>
+            <input id="username" type="text" placeholder="aman or sia" required />
+          </div>
+          <button type="submit">Generate JWT Token</button>
+        </form>
+        <div class="token-display" id="tokenDisplay">Token will appear here after login.</div>
+      </section>
+
+      <section class="card">
+        <h2>Quick Actions</h2>
+        <p class="note">Use these buttons to test each API endpoint.</p>
+        <div class="actions">
+          <button data-endpoint="/public/info">Test Public Info</button>
+          <button data-endpoint="/private/secure">Test Private Secure</button>
+          <button data-endpoint="/private/admin/users">List Admin Users</button>
+          <button data-endpoint="/private/admin/toggle" data-method="POST">Toggle Route Mode</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Security Modules</h2>
+        <p class="note" id="statusNote">Login to view live module telemetry.</p>
+        <div class="module-grid">
+          <div class="module-card">
+            <h3>Rate Limiter</h3>
+            <p>
+              Window Usage:
+              <strong><span id="rateCount">0</span>/<span id="rateMax" data-default="3">3</span></strong>
+            </p>
+            <p>
+              Warnings:
+              <strong><span id="rateWarnings">0</span>/<span id="rateMaxWarnings" data-default="3">3</span></strong>
+            </p>
+            <p>
+              Status:
+              <span class="status status-neutral" id="rateStatus">Unknown</span>
+            </p>
+            <p class="note small" id="rateReset">Window resets every 60 seconds.</p>
+          </div>
+          <div class="module-card">
+            <h3>IP Session Guard</h3>
+            <p>IP Address: <strong id="ipAddress">Unavailable</strong></p>
+            <p>
+              Session:
+              <span class="status status-neutral" id="sessionStatus">Not logged in</span>
+            </p>
+            <p>Issued: <strong id="sessionIssued">-</strong></p>
+            <p class="note small" id="sessionAge">Token age: 0s</p>
+          </div>
+          <div class="module-card">
+            <h3>Global Mode &amp; Blocking</h3>
+            <p>Current Mode: <strong id="moduleMode">PUBLIC</strong></p>
+            <p>Blocked: <strong id="blockStatus">No</strong></p>
+            <p class="note small" id="blockMessage">No warnings recorded.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>API Response</h2>
+        <div class="response-box" id="responseBox">Responses will display here.</div>
+      </section>
+    </main>
+    <footer>Powered by Node.js + SQLite + Swagger &mdash; Crafted in the spirit of 🇮🇳</footer>
+
+    <script>
+      const loginForm = document.getElementById('loginForm');
+      const tokenDisplay = document.getElementById('tokenDisplay');
+      const responseBox = document.getElementById('responseBox');
+      const modeIndicator = document.getElementById('modeIndicator');
+      const moduleModeEl = document.getElementById('moduleMode');
+      const rateCountEl = document.getElementById('rateCount');
+      const rateMaxEl = document.getElementById('rateMax');
+      const rateWarningsEl = document.getElementById('rateWarnings');
+      const rateMaxWarningsEl = document.getElementById('rateMaxWarnings');
+      const rateStatusEl = document.getElementById('rateStatus');
+      const rateResetEl = document.getElementById('rateReset');
+      const ipAddressEl = document.getElementById('ipAddress');
+      const sessionStatusEl = document.getElementById('sessionStatus');
+      const sessionIssuedEl = document.getElementById('sessionIssued');
+      const sessionAgeEl = document.getElementById('sessionAge');
+      const blockStatusEl = document.getElementById('blockStatus');
+      const blockMessageEl = document.getElementById('blockMessage');
+      const statusNoteEl = document.getElementById('statusNote');
+
+      let activeToken = '';
+
+      const applyStatusClass = (element, status) => {
+        const classes = ['status-success', 'status-warning', 'status-danger', 'status-neutral'];
+        element.classList.remove(...classes);
+        const lookup = {
+          success: 'status-success',
+          warning: 'status-warning',
+          danger: 'status-danger',
+          neutral: 'status-neutral'
+        };
+        element.classList.add(lookup[status] || 'status-neutral');
+      };
+
+      const formatDuration = (ms) => {
+        if (!Number.isFinite(ms) || ms <= 0) {
+          return 'now';
+        }
+        const totalSeconds = Math.ceil(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        if (minutes > 0) {
+          return `${minutes}m ${seconds}s`;
+        }
+        return `${seconds}s`;
+      };
+
+      const resetSecurityModules = (message = 'Login to view live module telemetry.') => {
+        statusNoteEl.textContent = message;
+        rateCountEl.textContent = '0';
+        rateWarningsEl.textContent = '0';
+        if (rateMaxEl?.dataset?.default) {
+          rateMaxEl.textContent = rateMaxEl.dataset.default;
+        }
+        if (rateMaxWarningsEl?.dataset?.default) {
+          rateMaxWarningsEl.textContent = rateMaxWarningsEl.dataset.default;
+        }
+        applyStatusClass(rateStatusEl, 'neutral');
+        rateStatusEl.textContent = 'Unknown';
+        rateResetEl.textContent = 'Window resets every 60 seconds.';
+        sessionStatusEl.textContent = 'Not logged in';
+        applyStatusClass(sessionStatusEl, 'neutral');
+        sessionIssuedEl.textContent = '-';
+        sessionAgeEl.textContent = 'Token age: 0s';
+        ipAddressEl.textContent = 'Unavailable';
+        blockStatusEl.textContent = 'No';
+        blockMessageEl.textContent = 'No warnings recorded.';
+      };
+
+      const updateMode = async () => {
+        try {
+          const headers = activeToken
+            ? {
+                Authorization: `Bearer ${activeToken}`,
+              }
+            : undefined;
+          const response = await fetch('/public/info', { headers });
+          if (!response.ok) {
+            modeIndicator.textContent = `Mode: ${response.status} ${response.statusText}`;
+            if (moduleModeEl) {
+              moduleModeEl.textContent = 'UNKNOWN';
+            }
+            return;
+          }
+          const data = await response.json();
+          const modeText = data.mode?.toUpperCase() || 'UNKNOWN';
+          modeIndicator.textContent = `Mode: ${modeText}`;
+          if (moduleModeEl) {
+            moduleModeEl.textContent = modeText;
+          }
+        } catch (error) {
+          modeIndicator.textContent = 'Mode: Unable to fetch';
+          if (moduleModeEl) {
+            moduleModeEl.textContent = 'UNKNOWN';
+          }
+        }
+      };
+
+      const renderResponse = (payload) => {
+        responseBox.textContent = typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2);
+      };
+
+      const updateSecurityStatus = async () => {
+        if (!activeToken) {
+          resetSecurityModules();
+          return;
+        }
+
+        try {
+          const response = await fetch('/private/status', {
+            headers: {
+              Authorization: `Bearer ${activeToken}`
+            }
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            statusNoteEl.textContent = data.message || 'Unable to fetch telemetry.';
+            if (response.status === 401) {
+              tokenDisplay.textContent = 'Token invalid or expired. Please login again.';
+              activeToken = '';
+              resetSecurityModules('Session expired. Please login again.');
+            }
+            return;
+          }
+
+          const { rateLimit = {}, session = {}, mode, ip } = data;
+
+          if (typeof rateLimit.maxRequests === 'number') {
+            rateMaxEl.textContent = rateLimit.maxRequests;
+          }
+          if (typeof rateLimit.maxWarnings === 'number') {
+            rateMaxWarningsEl.textContent = rateLimit.maxWarnings;
+          }
+
+          rateCountEl.textContent = rateLimit.requestsInWindow ?? '0';
+          rateWarningsEl.textContent = rateLimit.warnings ?? '0';
+          rateResetEl.textContent = `Window resets in ${formatDuration(rateLimit.windowResetMs)}.`;
+
+          if (rateLimit.blocked) {
+            rateStatusEl.textContent = 'Blocked';
+            applyStatusClass(rateStatusEl, 'danger');
+            blockStatusEl.textContent = 'Yes';
+            blockMessageEl.textContent = 'IP blocked after repeated violations. Contact an administrator to reset access.';
+          } else if ((rateLimit.warnings || 0) > 0) {
+            rateStatusEl.textContent = `Warning ${rateLimit.warnings}`;
+            applyStatusClass(rateStatusEl, 'warning');
+            blockStatusEl.textContent = 'No';
+            blockMessageEl.textContent = 'Slow down to avoid triggering a block.';
+          } else {
+            rateStatusEl.textContent = 'Clear';
+            applyStatusClass(rateStatusEl, 'success');
+            blockStatusEl.textContent = 'No';
+            blockMessageEl.textContent = 'No warnings recorded.';
+          }
+
+          ipAddressEl.textContent = ip || 'Unavailable';
+
+          if (session.active) {
+            sessionStatusEl.textContent = 'Active session';
+            applyStatusClass(sessionStatusEl, 'success');
+            sessionIssuedEl.textContent = session.issuedAt ? new Date(session.issuedAt).toLocaleString() : '-';
+            sessionAgeEl.textContent = `Token age: ${formatDuration(session.tokenAgeMs)}`;
+          } else {
+            sessionStatusEl.textContent = 'Not logged in';
+            applyStatusClass(sessionStatusEl, 'neutral');
+            sessionIssuedEl.textContent = '-';
+            sessionAgeEl.textContent = 'Token age: 0s';
+          }
+
+          if (moduleModeEl && mode) {
+            moduleModeEl.textContent = mode.toUpperCase();
+          }
+
+          statusNoteEl.textContent = 'Telemetry synced successfully.';
+        } catch (error) {
+          statusNoteEl.textContent = 'Unable to reach telemetry endpoint.';
+        }
+      };
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        if (!username) {
+          renderResponse('Please provide a username.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/private/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            renderResponse(data);
+            tokenDisplay.textContent = 'Token will appear here after login.';
+            activeToken = '';
+            resetSecurityModules('Login to view live module telemetry.');
+            return;
+          }
+
+          activeToken = data.token;
+          tokenDisplay.textContent = data.token;
+          if (data.ip) {
+            ipAddressEl.textContent = data.ip;
+          }
+          renderResponse(data);
+          updateMode();
+          updateSecurityStatus();
+        } catch (error) {
+          renderResponse({ error: 'Network error', message: error.message });
+        }
+      });
+
+      document.querySelectorAll('.actions button').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const endpoint = button.dataset.endpoint;
+          const method = button.dataset.method || 'GET';
+
+          const options = {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+
+          if (activeToken) {
+            options.headers.Authorization = `Bearer ${activeToken}`;
+          }
+
+          if (method === 'POST' && endpoint === '/private/admin/toggle') {
+            options.body = JSON.stringify({});
+          }
+
+          try {
+            const response = await fetch(endpoint, options);
+            const data = await response.json().catch(() => ({}));
+            renderResponse(data);
+            updateMode();
+            updateSecurityStatus();
+          } catch (error) {
+            renderResponse({ error: 'Network error', message: error.message });
+          }
+        });
+      });
+
+      updateMode();
+      resetSecurityModules();
+    </script>
+  </body>
+</html>
