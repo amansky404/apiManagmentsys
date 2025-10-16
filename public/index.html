@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🇮🇳 Unified API Management System – Tricolor Edition</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --saffron: #ff9933;
+        --green: #138808;
+        --white: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.1);
+      }
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--white);
+        color: #1f2933;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      header {
+        background: var(--saffron);
+        color: var(--white);
+        text-align: center;
+        padding: 2rem 1rem;
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+      header h1 {
+        margin: 0;
+        font-size: 2rem;
+        letter-spacing: 1px;
+      }
+      main {
+        flex: 1;
+        padding: 2rem 1rem 3rem;
+        max-width: 960px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .card {
+        background: var(--white);
+        border-radius: 16px;
+        border: 2px solid rgba(19, 136, 8, 0.15);
+        box-shadow: 0 12px 30px var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .mode-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--green);
+        background: rgba(19, 136, 8, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+      }
+      form {
+        display: grid;
+        gap: 1rem;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type='text'] {
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        font-size: 1rem;
+      }
+      button {
+        background: linear-gradient(90deg, #ff9933, #ffffff, #138808);
+        border: none;
+        color: #0b1f15;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(19, 136, 8, 0.25);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .token-display {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 153, 51, 0.1);
+        border-left: 4px solid var(--saffron);
+        border-radius: 12px;
+        word-break: break-all;
+        font-size: 0.9rem;
+        color: #374151;
+      }
+      .response-box {
+        background: linear-gradient(135deg, rgba(19, 136, 8, 0.12), rgba(255, 255, 255, 0.9));
+        border-radius: 16px;
+        border: 2px solid rgba(19, 136, 8, 0.3);
+        padding: 1.5rem;
+        font-family: 'Poppins', sans-serif;
+        min-height: 160px;
+        white-space: pre-wrap;
+        color: #1f2933;
+      }
+      footer {
+        background: var(--green);
+        color: var(--white);
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🇮🇳 Unified API Management System Dashboard</h1>
+      <p class="note">Tricolor Edition &middot; Node.js + Express + SQLite + Swagger</p>
+    </header>
+    <main>
+      <section class="card">
+        <h2>System Mode</h2>
+        <p class="mode-indicator" id="modeIndicator">Mode: Loading...</p>
+      </section>
+
+      <section class="card">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div>
+            <label for="username">Username</label>
+            <input id="username" type="text" placeholder="aman or sia" required />
+          </div>
+          <button type="submit">Generate JWT Token</button>
+        </form>
+        <div class="token-display" id="tokenDisplay">Token will appear here after login.</div>
+      </section>
+
+      <section class="card">
+        <h2>Quick Actions</h2>
+        <p class="note">Use these buttons to test each API endpoint.</p>
+        <div class="actions">
+          <button data-endpoint="/public/info">Test Public Info</button>
+          <button data-endpoint="/private/secure">Test Private Secure</button>
+          <button data-endpoint="/private/admin/users">List Admin Users</button>
+          <button data-endpoint="/private/admin/toggle" data-method="POST">Toggle Route Mode</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>API Response</h2>
+        <div class="response-box" id="responseBox">Responses will display here.</div>
+      </section>
+    </main>
+    <footer>Powered by Node.js + SQLite + Swagger &mdash; Crafted in the spirit of 🇮🇳</footer>
+
+    <script>
+      const loginForm = document.getElementById('loginForm');
+      const tokenDisplay = document.getElementById('tokenDisplay');
+      const responseBox = document.getElementById('responseBox');
+      const modeIndicator = document.getElementById('modeIndicator');
+
+      let activeToken = '';
+
+      const updateMode = async () => {
+        try {
+          const headers = activeToken
+            ? {
+                Authorization: `Bearer ${activeToken}`,
+              }
+            : undefined;
+          const response = await fetch('/public/info', { headers });
+          if (!response.ok) {
+            modeIndicator.textContent = `Mode: ${response.status} ${response.statusText}`;
+            return;
+          }
+          const data = await response.json();
+          modeIndicator.textContent = `Mode: ${data.mode?.toUpperCase()}`;
+        } catch (error) {
+          modeIndicator.textContent = 'Mode: Unable to fetch';
+        }
+      };
+
+      const renderResponse = (payload) => {
+        responseBox.textContent = typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2);
+      };
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        if (!username) {
+          renderResponse('Please provide a username.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/private/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            renderResponse(data);
+            tokenDisplay.textContent = 'Token will appear here after login.';
+            activeToken = '';
+            return;
+          }
+
+          activeToken = data.token;
+          tokenDisplay.textContent = data.token;
+          renderResponse(data);
+          updateMode();
+        } catch (error) {
+          renderResponse({ error: 'Network error', message: error.message });
+        }
+      });
+
+      document.querySelectorAll('.actions button').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const endpoint = button.dataset.endpoint;
+          const method = button.dataset.method || 'GET';
+
+          const options = {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+
+          if (activeToken) {
+            options.headers.Authorization = `Bearer ${activeToken}`;
+          }
+
+          if (method === 'POST' && endpoint === '/private/admin/toggle') {
+            options.body = JSON.stringify({});
+          }
+
+          try {
+            const response = await fetch(endpoint, options);
+            const data = await response.json().catch(() => ({}));
+            renderResponse(data);
+            updateMode();
+          } catch (error) {
+            renderResponse({ error: 'Network error', message: error.message });
+          }
+        });
+      });
+
+      updateMode();
+    </script>
+  </body>
+</html>
